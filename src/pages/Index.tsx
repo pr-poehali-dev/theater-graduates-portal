@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Icon from '@/components/ui/icon';
 
 interface Graduate {
@@ -8,6 +10,11 @@ interface Graduate {
   name: string;
   role: string;
   image: string;
+  bio: string;
+  education: string;
+  achievements: string[];
+  photos: string[];
+  videos: { title: string; url: string }[];
 }
 
 interface Production {
@@ -20,12 +27,94 @@ interface Production {
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('home');
+  const [selectedGraduate, setSelectedGraduate] = useState<Graduate | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const graduates: Graduate[] = [
-    { id: 1, name: 'Анна Смирнова', role: 'Актриса драматического театра', image: 'https://v3b.fal.media/files/b/lion/RxpKUwVWOqeISA38_MeRD_output.png' },
-    { id: 2, name: 'Дмитрий Петров', role: 'Актёр музыкального театра', image: 'https://v3b.fal.media/files/b/lion/RxpKUwVWOqeISA38_MeRD_output.png' },
-    { id: 3, name: 'Елена Иванова', role: 'Актриса театра и кино', image: 'https://v3b.fal.media/files/b/lion/RxpKUwVWOqeISA38_MeRD_output.png' },
-    { id: 4, name: 'Михаил Козлов', role: 'Актёр драматического театра', image: 'https://v3b.fal.media/files/b/lion/RxpKUwVWOqeISA38_MeRD_output.png' },
+    { 
+      id: 1, 
+      name: 'Анна Смирнова', 
+      role: 'Актриса драматического театра', 
+      image: 'https://v3b.fal.media/files/b/lion/RxpKUwVWOqeISA38_MeRD_output.png',
+      bio: 'Выпускница 2024 года. Специализируется на классической драме и современных постановках. Работает в Малом драматическом театре.',
+      education: 'Театральное училище имени Евстигнеева, курс А.А. Ярлыкова, 2020-2024',
+      achievements: [
+        'Лауреат фестиваля «Театральная весна» 2023',
+        'Специальный приз жюри на конкурсе «Молодые таланты России»',
+        'Главная роль в дипломном спектакле «Гамлет»'
+      ],
+      photos: [
+        'https://v3b.fal.media/files/b/lion/RxpKUwVWOqeISA38_MeRD_output.png',
+        'https://v3b.fal.media/files/b/lion/RxpKUwVWOqeISA38_MeRD_output.png',
+        'https://v3b.fal.media/files/b/lion/RxpKUwVWOqeISA38_MeRD_output.png'
+      ],
+      videos: [
+        { title: 'Монолог из спектакля "Гамлет"', url: '#' },
+        { title: 'Отрывок из "Вишнёвого сада"', url: '#' }
+      ]
+    },
+    { 
+      id: 2, 
+      name: 'Дмитрий Петров', 
+      role: 'Актёр музыкального театра', 
+      image: 'https://v3b.fal.media/files/b/lion/RxpKUwVWOqeISA38_MeRD_output.png',
+      bio: 'Выпускник 2024 года. Обладает выдающимися вокальными данными. Работает в Театре музыкальной комедии.',
+      education: 'Театральное училище имени Евстигнеева, курс А.А. Ярлыкова, 2020-2024',
+      achievements: [
+        'Победитель конкурса «Голоса театра» 2023',
+        'Главная роль в мюзикле "Чикаго"',
+        'Стипендиат фонда поддержки молодых талантов'
+      ],
+      photos: [
+        'https://v3b.fal.media/files/b/lion/RxpKUwVWOqeISA38_MeRD_output.png',
+        'https://v3b.fal.media/files/b/lion/RxpKUwVWOqeISA38_MeRD_output.png'
+      ],
+      videos: [
+        { title: 'Ария из мюзикла "Чикаго"', url: '#' }
+      ]
+    },
+    { 
+      id: 3, 
+      name: 'Елена Иванова', 
+      role: 'Актриса театра и кино', 
+      image: 'https://v3b.fal.media/files/b/lion/RxpKUwVWOqeISA38_MeRD_output.png',
+      bio: 'Выпускница 2024 года. Снимается в кино и сериалах, играет в БДТ им. Товстоногова.',
+      education: 'Театральное училище имени Евстигнеева, курс А.А. Ярлыкова, 2020-2024',
+      achievements: [
+        'Роль второго плана в фильме "Северное сияние"',
+        'Участие в сериале "Питерские истории"',
+        'Номинация на премию "Прорыв года"'
+      ],
+      photos: [
+        'https://v3b.fal.media/files/b/lion/RxpKUwVWOqeISA38_MeRD_output.png',
+        'https://v3b.fal.media/files/b/lion/RxpKUwVWOqeISA38_MeRD_output.png',
+        'https://v3b.fal.media/files/b/lion/RxpKUwVWOqeISA38_MeRD_output.png'
+      ],
+      videos: [
+        { title: 'Трейлер фильма "Северное сияние"', url: '#' },
+        { title: 'Театральная сцена', url: '#' }
+      ]
+    },
+    { 
+      id: 4, 
+      name: 'Михаил Козлов', 
+      role: 'Актёр драматического театра', 
+      image: 'https://v3b.fal.media/files/b/lion/RxpKUwVWOqeISA38_MeRD_output.png',
+      bio: 'Выпускник 2024 года. Специализируется на характерных ролях. Работает в Александринском театре.',
+      education: 'Театральное училище имени Евстигнеева, курс А.А. Ярлыкова, 2020-2024',
+      achievements: [
+        'Лучшая мужская роль на фестивале «Балтийский дом»',
+        'Главная роль в спектакле "Ревизор"',
+        'Участник европейской театральной лаборатории'
+      ],
+      photos: [
+        'https://v3b.fal.media/files/b/lion/RxpKUwVWOqeISA38_MeRD_output.png',
+        'https://v3b.fal.media/files/b/lion/RxpKUwVWOqeISA38_MeRD_output.png'
+      ],
+      videos: [
+        { title: 'Сцена из "Ревизора"', url: '#' }
+      ]
+    },
   ];
 
   const productions: Production[] = [
@@ -38,6 +127,11 @@ const Index = () => {
     setActiveSection(sectionId);
     const element = document.getElementById(sectionId);
     element?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const openPortfolio = (graduate: Graduate) => {
+    setSelectedGraduate(graduate);
+    setIsDialogOpen(true);
   };
 
   return (
@@ -133,6 +227,7 @@ const Index = () => {
                     <Button 
                       className="w-full mt-4 bg-accent hover:bg-accent/90 text-accent-foreground"
                       size="sm"
+                      onClick={() => openPortfolio(graduate)}
                     >
                       Портфолио
                     </Button>
@@ -228,6 +323,94 @@ const Index = () => {
           <p>© 2024 Курс Андрея Ярлыкова. Театральное училище имени Евстигнеева</p>
         </div>
       </footer>
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          {selectedGraduate && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-3xl">{selectedGraduate.name}</DialogTitle>
+                <p className="text-muted-foreground">{selectedGraduate.role}</p>
+              </DialogHeader>
+              
+              <Tabs defaultValue="bio" className="w-full">
+                <TabsList className="grid w-full grid-cols-4">
+                  <TabsTrigger value="bio">О себе</TabsTrigger>
+                  <TabsTrigger value="achievements">Достижения</TabsTrigger>
+                  <TabsTrigger value="photos">Фото</TabsTrigger>
+                  <TabsTrigger value="videos">Видео</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="bio" className="space-y-4">
+                  <div className="aspect-square w-full max-w-md mx-auto overflow-hidden rounded-lg">
+                    <img 
+                      src={selectedGraduate.image} 
+                      alt={selectedGraduate.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="text-xl font-semibold mb-2">Биография</h3>
+                      <p className="text-muted-foreground">{selectedGraduate.bio}</p>
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-semibold mb-2">Образование</h3>
+                      <p className="text-muted-foreground">{selectedGraduate.education}</p>
+                    </div>
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="achievements" className="space-y-4">
+                  <h3 className="text-xl font-semibold">Награды и достижения</h3>
+                  <ul className="space-y-3">
+                    {selectedGraduate.achievements.map((achievement, index) => (
+                      <li key={index} className="flex items-start gap-3">
+                        <Icon name="Award" size={20} className="text-accent mt-1 flex-shrink-0" />
+                        <span className="text-muted-foreground">{achievement}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </TabsContent>
+                
+                <TabsContent value="photos" className="space-y-4">
+                  <h3 className="text-xl font-semibold">Фотогалерея</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    {selectedGraduate.photos.map((photo, index) => (
+                      <div key={index} className="aspect-square overflow-hidden rounded-lg">
+                        <img 
+                          src={photo} 
+                          alt={`${selectedGraduate.name} - фото ${index + 1}`}
+                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="videos" className="space-y-4">
+                  <h3 className="text-xl font-semibold">Видеоработы</h3>
+                  <div className="space-y-4">
+                    {selectedGraduate.videos.map((video, index) => (
+                      <Card key={index} className="p-4">
+                        <div className="flex items-center gap-3">
+                          <Icon name="Video" size={24} className="text-accent" />
+                          <div>
+                            <h4 className="font-semibold">{video.title}</h4>
+                            <a href={video.url} className="text-sm text-accent hover:underline">
+                              Смотреть видео
+                            </a>
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                </TabsContent>
+              </Tabs>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
